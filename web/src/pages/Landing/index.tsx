@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 
 import logoImg from '../../assets/images/logo.svg';
@@ -8,9 +8,26 @@ import studyIcon from '../../assets/images/icons/study.svg';
 import giveClassesIcon from '../../assets/images/icons/give-classes.svg';
 import purpleHeartIcon from '../../assets/images/icons/purple-heart.svg';
 
+import api from '../../services/api';
+
 import './styles.css';
 
 const Landing: React.FC = () => {
+  const [totalConnections, setTotalConnections] = useState('');
+
+  const handleTotalConnections = useCallback(async () => {
+    const response = await api.get('/connections');
+    const { data: { total } } = response;
+
+    const word = total !== 1 ? 'conexões' : 'conexão';
+
+    setTotalConnections(`${total} ${word}`);
+  }, []);
+
+  useEffect(() => {
+    handleTotalConnections();
+  }, [handleTotalConnections]);
+
   return (
     <div id="page-landing">
       <div id="page-landing-content" className="container">
@@ -34,7 +51,7 @@ const Landing: React.FC = () => {
         </div>
 
         <span className="total-connections">
-          Total de 200 conexões já realizadas <img src={purpleHeartIcon} alt="Coração roxo"/>
+          Total de {totalConnections} já realizadas <img src={purpleHeartIcon} alt="Coração roxo"/>
         </span>
       </div>
     </div>

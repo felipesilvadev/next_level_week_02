@@ -2,34 +2,60 @@ import React from 'react';
 
 import whatsIcon from '../../assets/images/icons/whatsapp.svg';
 
+import api from '../../services/api';
+
+import formatValue from '../../utils/formateValue';
+
 import './styles.css';
 
-const TeacherItem: React.FC = () => {
+export interface Teacher {
+  id: number;
+  name: string;
+  avatar: string;
+  whatsapp: string;
+  bio: string;
+  subject: string;
+  cost: number;
+  user_id: number;
+}
+
+interface TeacherItemProps {
+  teacher: Teacher;
+}
+
+const TeacherItem: React.FC<TeacherItemProps> = ({ teacher }) => {
+  const createNewConnection = () => {
+    api.post('/connections', { user_id: teacher.user_id });
+  };
+
   return (
     <article className="teacher-item">
       <header>
-        <img src="https://avatars0.githubusercontent.com/u/38724010?s=460&u=056b2659d6ac0e487efab430dff6646e49f344fc&v=4" alt="Teste"/>
+        <img src={teacher.avatar} alt={teacher.name}/>
         <div>
-          <strong>Felipe Silva</strong>
-          <span>Física</span>
+          <strong>{teacher.name}</strong>
+          <span>{teacher.subject}</span>
         </div>
       </header>
 
       <p>
-        Entusiasta em Física
-        <br /><br />
-        Apaixonado por Física e tudo mais
+        {teacher.bio}
       </p>
 
       <footer>
         <p>
           Preço/hora
-          <strong>R$ 50,00</strong>
+          <strong>{formatValue(teacher.cost)}</strong>
         </p>
-        <button type="button">
+        <a 
+          href={`https://wa.me/${teacher.whatsapp}`} 
+          onClick={createNewConnection}
+          target="_blank"
+          rel="noopener noreferrer"
+        >
           <img src={whatsIcon} alt="WhatsApp" />
           Entrar em contato
-        </button>
+        </a>
       </footer>
     </article>
   );
