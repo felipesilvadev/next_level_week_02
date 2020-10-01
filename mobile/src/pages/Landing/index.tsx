@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { Image, View, Text } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { RectButton } from 'react-native-gesture-handler';
@@ -10,8 +10,12 @@ import studyIcon from '../../assets/images/icons/study.png';
 import giveClassesIcon from '../../assets/images/icons/give-classes.png';
 import heartIcon from '../../assets/images/icons/heart.png';
 
+import api from '../../services/api';
+
 const Landing: React.FC = () => {
   const { navigate } = useNavigation();
+
+  const [totalConnections, setTotalConnections] = useState('');
 
   const handleNavigateToStudyPages = () => {
     navigate('Study');
@@ -20,6 +24,19 @@ const Landing: React.FC = () => {
   const handleNavigateToGiveClasses = () => {
     navigate('GiveClasses');
   };
+
+  const handleTotalConnections = useCallback(async () => {
+    const response = await api.get('/connections');
+    const { data: { total } } = response;
+
+    const word = total !== 1 ? 'conexões' : 'conexão';
+
+    setTotalConnections(`${total} ${word}`);
+  }, []);
+
+  useEffect(() => {
+    handleTotalConnections();
+  }, [handleTotalConnections]);
 
   return (
     <View style={styles.container}>
@@ -49,7 +66,7 @@ const Landing: React.FC = () => {
       </View>
 
       <Text style={styles.totalConnections}>
-        Total de 8 conexões já realizadas {' '}
+        Total de {totalConnections} já realizada(s) {' '}
         <Image source={heartIcon} />
       </Text>
     </View>
